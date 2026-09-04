@@ -48,7 +48,6 @@ let selectionBox =
     Displays a payment result on the webpage.
   ============================================================
 */
-
 browser.runtime.onMessage.addListener(
   (message) => {
     if (
@@ -102,9 +101,38 @@ browser.runtime.onMessage.addListener(
       return false;
     }
 
+    if (
+      message.type ===
+      "ANALYZE_WEBPAGE"
+    ) {
+    const text =
+        collectPageText();
+
+      const links =
+        collectPageLinks();
+      
+      console.log("[Link Collector] Returned links:", links.length, links.slice(0, 10));
+      
+      console.log(
+        "[content] Page analysis text length:",
+        text.length
+      );
+
+      console.log(
+        "[content] Page analysis link count:",
+        links.length
+      );
+
+      return Promise.resolve({
+        ok: true,
+        text,
+        links
+      }); 
+    }
     return false;
   }
 );
+
 
 
 /*
@@ -270,13 +298,10 @@ function handleSelectionMove(
   event.preventDefault();
 }
 
-function handleSelectionEnd(
-  event
-) {
+function handleSelectionEnd(event) {
   if (
     !selectionBox ||
-    selectionBox.style.display !==
-      "block"
+    selectionBox.style.display !== "block"
   ) {
     return;
   }
@@ -288,36 +313,28 @@ function handleSelectionEnd(
     );
 
   if (
-    selection.width <
-      10 ||
-    selection.height <
-      10
+    selection.width < 10 ||
+    selection.height < 10
   ) {
     cancelSnapshotSelection();
-
     return;
   }
 
-  /*
-    Important:
-    We do not copy anything here.
-
-    We only collect text from the selected area so that the
-    popup can detect emails, phones, URLs, and addresses.
-  */
   const selectedText =
     extractTextFromArea(
       selection
     );
 
+  console.log(
+    "[content] Snapshot selected text:",
+    selectedText
+  );
+
   removeSelectionOverlay();
 
   browser.runtime.sendMessage({
-    type:
-      "SNAPSHOT_SELECTION",
-
+    type: "SNAPSHOT_SELECTION",
     selection,
-
     selectedText
   });
 
@@ -409,106 +426,134 @@ function getSelectionRectangle(
 
 /*
   ============================================================
-  6. Extract text from the selected area
-  ------------------------------------------------------------
-  This is the main fix.
-
-  The old version examined every element, including parent
-  elements and their children. That caused the same text to
-  be collected many times.
-
-  The new version:
-    - Ignores the Snapshot overlay.
-    - Ignores hidden elements.
-    - Uses only visible text-bearing elements.
-    - Skips elements that contain another suitable text
-      element.
-    - Keeps only text that overlaps the selected rectangle.
-    - Removes duplicate text.
-    - Does not copy anything to the clipboard.
+  analysize webpage 
+ 
   ============================================================
 */
 
-function extractTextFromArea(
-  selection
-) {
-  const selectedParts =
-    [];
+function extractTextFromArea(selection) {
+  const selectedParts = [];
+  const root = document.body;
 
-  const elements =
-    document.querySelectorAll(
-      "body *"
+  if (!root) {
+    return "";
+  }
+
+  const walker =
+    document.createTreeWalker(
+      root,
+      NodeFilter.SHOW_TEXT
     );
 
-  elements.forEach(
-    (element) => {
-      if (
-        shouldIgnoreElement(
-          element
-        )
-      ) {
-        return;
-      }
+  let node;
 
-      const rect =
-        element.getBoundingClientRect();
+  while (
+    (node = walker.nextNode())
+  ) {
+    const text =
+      node.nodeValue
+        .replace(/\s+/g, " ")
+        .trim();
 
-      if (
-        !isVisibleElement(
-          element,
-          rect
-        )
-      ) {
-        return;
-      }
-
-      if (
-        !rectOverlapsSelection(
-          rect,
-          selection
-        )
-      ) {
-        return;
-      }
-
-      /*
-        If this element contains another visible text element,
-        use the smaller text element instead of collecting the
-        entire parent block.
-      */
-      if (
-        containsTextChild(
-          element
-        )
-      ) {
-        return;
-      }
-
-      const text =
-        getElementText(
-          element
-        );
-
-      if (
-        !text
-      ) {
-        return;
-      }
-
-      selectedParts.push(
-        text
-      );
+    if (!text) {
+      continue;
     }
-  );
+
+    const parent =
+      node.parentElement;
+
+    if (
+      !parent ||
+      shouldIgnoreElement(parent)
+    ) {
+      continue;
+    }
+
+    const range =
+      document.createRange();
+
+    range.selectNodeContents(node);
+
+    const rectangles =
+      Array.from(
+        range.getClientRects()
+      );
+
+    const overlaps =
+      rectangles.some(
+        (rect) =>
+          rect.right >
+            selection.left &&
+          rect.left <
+            selection.left +
+              selection.width &&
+          rect.bottom >
+            selection.top &&
+          rect.top <
+            selection.top +
+              selection.height
+      );
+
+    if (!overlaps) {
+      continue;
+    }
+
+    selectedParts.push(text);
+  }
 
   return [
-    ...new Set(
-      selectedParts
-    )
-  ].join(
-    "\n"
-  );
+    ...new Set(selectedParts)
+  ].join("\n");
 }
+
+
+
+
+
+function analyzeCurrentWebpage() {
+  const text =
+    getReadablePageText();
+
+  return {
+    ok: true,
+    text
+  };
+}
+
+function getReadablePageText() {
+  const clone =
+    document.body.cloneNode(
+      true
+    );
+
+  clone
+    .querySelectorAll(
+      "script, style, noscript, template, svg, canvas, input, textarea, select, option, iframe"
+    )
+    .forEach(
+      (element) => {
+        element.remove();
+      }
+    );
+
+  return (
+    clone.innerText ||
+    clone.textContent ||
+    ""
+  )
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+
+
+
+
+
+
+
+
+
 
 
 /*
@@ -596,10 +641,28 @@ function isVisibleElement(
     return false;
   }
 
+  /*
+    Analyze only content that overlaps the browser screen
+    at the moment Analyze webpage is clicked.
+  */
+  const overlapsViewport =
+    rect.bottom >
+      0 &&
+    rect.right >
+      0 &&
+    rect.top <
+      window.innerHeight &&
+    rect.left <
+      window.innerWidth;
+
+  if (
+    !overlapsViewport
+  ) {
+    return false;
+  }
+
   return true;
 }
-
-
 /*
   ============================================================
   9. Check rectangle overlap
@@ -983,4 +1046,608 @@ function showMessage(
     },
     3500
   );
+}
+
+function collectPageText() {
+  const parts =
+    [];
+
+  const seen =
+    new Set();
+
+  const root =
+    document.body ||
+    document.documentElement;
+
+  if (
+    !root
+  ) {
+    return "";
+  }
+
+  const ignoredSelector =
+    [
+      "script",
+      "style",
+      "noscript",
+      "template",
+      "svg",
+      "canvas",
+      "iframe",
+      "#__qr_snapshot_overlay__",
+      "#__qr_snapshot_selection__",
+      "#__qr_payment_message__"
+    ].join(
+      ","
+    );
+
+  /*
+    Read text from the complete document, including content
+    below the currently visible viewport. We do not use
+    getBoundingClientRect() or isVisibleElement() here.
+  */
+  const walker =
+    document.createTreeWalker(
+      root,
+      NodeFilter.SHOW_TEXT
+    );
+
+  let node;
+
+  while (
+    (node = walker.nextNode())
+  ) {
+    const parent =
+      node.parentElement;
+
+    if (
+      !parent ||
+      parent.closest(
+        ignoredSelector
+      )
+    ) {
+      continue;
+    }
+
+    const text =
+      node.nodeValue
+        .replace(
+          /\s+/g,
+          " "
+        )
+        .trim();
+
+    if (
+      !text
+    ) {
+      continue;
+    }
+
+    const key =
+      text.toLowerCase();
+
+    if (
+      seen.has(
+        key
+      )
+    ) {
+      continue;
+    }
+
+    seen.add(
+      key
+    );
+
+    parts.push(
+      text
+    );
+  }
+
+    /*
+    Include every normal web-link destination in the page.
+    link.href returns the browser-resolved absolute URL, so it
+    also captures relative href values such as /instagram.
+  */
+  root
+    .querySelectorAll(
+      "a[href], area[href]"
+    )
+    .forEach(
+      (link) => {
+        if (
+          link.closest(
+            ignoredSelector
+          )
+        ) {
+          return;
+        }
+
+        const href =
+          (
+            link.href ||
+            ""
+          )
+            .trim();
+
+        if (
+          !/^https?:\/\//i.test(
+            href
+          )
+        ) {
+          return;
+        }
+
+        const key =
+          href.toLowerCase();
+
+        if (
+          seen.has(
+            key
+          )
+        ) {
+          return;
+        }
+
+        seen.add(
+          key
+        );
+
+        parts.push(
+          href
+        );
+      }
+    );
+
+  /*
+    Also include explicit telephone and email link values.
+    They are not placed in the URL list, but allow your normal
+    phone/email extraction to inspect them.
+  */
+  root
+    .querySelectorAll(
+      'a[href^="tel:"], a[href^="mailto:"]'
+    )
+    .forEach(
+      (link) => {
+        if (
+          link.closest(
+            ignoredSelector
+          )
+        ) {
+          return;
+        }
+
+        const rawHref =
+          (
+            link.getAttribute(
+              "href"
+            ) ||
+            ""
+          )
+            .trim();
+
+        const value =
+          rawHref
+            .replace(
+              /^tel:/i,
+              ""
+            )
+            .replace(
+              /^mailto:/i,
+              ""
+            )
+            .trim();
+
+        if (
+          !value
+        ) {
+          return;
+        }
+
+        const key =
+          value.toLowerCase();
+
+        if (
+          seen.has(
+            key
+          )
+        ) {
+          return;
+        }
+
+        seen.add(
+          key
+        );
+
+        parts.push(
+          value
+        );
+      }
+    );
+  return parts.join(
+    "\n"
+  );
+}
+
+
+function collectTelegramLinks() {
+  const telegramLinks = new Set();
+
+  function searchForTelegramUrl(value) {
+    if (typeof value !== "string") {
+      return;
+    }
+
+    const matches = value.match(
+      /https?:\/\/(?:t\.me|telegram\.me|telegram\.dog)\/[^\s"'<>\\]+/gi
+    );
+
+    if (matches) {
+      for (const url of matches) {
+        telegramLinks.add(url.replace(/[),.;]+$/, ""));
+      }
+    }
+  }
+
+  // Search visible page HTML for Telegram URLs.
+  searchForTelegramUrl(document.documentElement.innerHTML);
+
+  // Search inline scripts, if the site placed a URL there.
+  for (const script of document.scripts) {
+    searchForTelegramUrl(script.textContent || "");
+  }
+
+  return [...telegramLinks];
+}
+
+
+function collectTawkLinks() {
+  const tawkLinks =
+    new Set();
+
+  function searchForTawkUrl(
+    value
+  ) {
+    if (
+      typeof value !==
+      "string"
+    ) {
+      return;
+    }
+
+    const normalized =
+      value.replace(
+        /\\\//g,
+        "/"
+      );
+
+    const matches =
+      normalized.match(
+        /https?:\/\/(?:embed\.)?tawk\.to\/(?:chat\/)?[a-z0-9]+\/[a-z0-9]+/gi
+      );
+
+    if (
+      !matches
+    ) {
+      return;
+    }
+
+    matches.forEach(
+      (url) => {
+        const ids =
+          url.match(
+            /tawk\.to\/(?:chat\/)?([a-z0-9]+)\/([a-z0-9]+)/i
+          );
+
+        if (
+          !ids
+        ) {
+          return;
+        }
+
+        tawkLinks.add(
+          `https://tawk.to/chat/${ids[1]}/${ids[2]}`
+        );
+      }
+    );
+  }
+
+  searchForTawkUrl(
+    document.documentElement.innerHTML
+  );
+
+  Array.from(
+    document.scripts
+  ).forEach(
+    (script) => {
+      searchForTawkUrl(
+        script.src ||
+        ""
+      );
+
+      searchForTawkUrl(
+        script.textContent ||
+        ""
+      );
+    }
+  );
+
+  return [
+    ...tawkLinks
+  ];
+}
+
+
+
+function collectApkLinks() {
+  const apkLinks =
+    new Set();
+
+  const apkMimeType =
+    "application/vnd.android.package-archive";
+
+  document
+    .querySelectorAll(
+      "a[href], area[href]"
+    )
+    .forEach(
+      (link) => {
+        const href =
+          (
+            link.href ||
+            ""
+          )
+            .trim();
+
+        const rawHref =
+          (
+            link.getAttribute(
+              "href"
+            ) ||
+            ""
+          )
+            .trim();
+
+        const downloadName =
+          (
+            link.getAttribute(
+              "download"
+            ) ||
+            ""
+          )
+            .trim();
+
+        const type =
+          (
+            link.getAttribute(
+              "type"
+            ) ||
+            ""
+          )
+            .toLowerCase()
+            .trim();
+
+        const linkText =
+          (
+            link.textContent ||
+            ""
+          )
+            .replace(
+              /\s+/g,
+              " "
+            )
+            .trim();
+
+        const hasApkUrl =
+          /\.apk(?:[?#]|$)/i.test(
+            href
+          ) ||
+          /\.apk(?:[?#]|$)/i.test(
+            rawHref
+          );
+
+        const hasApkFilename =
+          /\.apk$/i.test(
+            downloadName
+          );
+
+        const hasApkMimeType =
+          type ===
+          apkMimeType;
+
+        const hasApkText =
+          /\b(?:download|get|install)\s+(?:the\s+)?apk\b|\bandroid\s+apk\b/i.test(
+            linkText
+          );
+
+        if (
+          (
+            hasApkUrl ||
+            hasApkFilename ||
+            hasApkMimeType ||
+            hasApkText
+          ) &&
+          /^https?:\/\//i.test(
+            href
+          )
+        ) {
+          apkLinks.add(
+            href
+          );
+        }
+      }
+    );
+
+  return [
+    ...apkLinks
+  ];
+}
+
+
+function collectUrlsFromPageHtml() {
+  const urls =
+    new Set();
+
+  const html =
+    (
+      document.documentElement.innerHTML ||
+      ""
+    ).replace(
+      /\\\//g,
+      "/"
+    );
+
+  const matches =
+    html.match(
+      /https?:\/\/[^\s"'<>\\]+/gi
+    ) || [];
+
+  matches.forEach(
+    (value) => {
+      const candidate =
+        value.replace(
+          /[),.;]+$/,
+          ""
+        );
+
+      try {
+        const url =
+          new URL(
+            candidate
+          );
+
+        if (
+          url.protocol ===
+            "https:" ||
+          url.protocol ===
+            "http:"
+        ) {
+          urls.add(
+            url.href
+          );
+        }
+      } catch {
+        // Ignore a non-valid URL-like string.
+      }
+    }
+  );
+
+  return [
+    ...urls
+  ];
+}
+
+
+function collectPageLinks() {
+  const links = new Set();
+  const scannedDocuments = new Set();
+
+  function scanDocument(doc, sourceName = "page") {
+    // Do not scan the same page twice.
+    if (!doc || scannedDocuments.has(doc)) {
+      return;
+    }
+
+    scannedDocuments.add(doc);
+
+    // Collect normal links from this document.
+    const anchors = doc.querySelectorAll("a[href]");
+
+    console.log(
+      `[Link Collector] ${sourceName}: found ${anchors.length} links`
+    );
+
+    for (const anchor of anchors) {
+      const href = anchor.href?.trim();
+
+      if (
+        href &&
+        (href.startsWith("https://") || href.startsWith("http://"))
+      ) {
+        links.add(href);
+      }
+    }
+
+    // Look for iframes/frames inside this document.
+    const frames = doc.querySelectorAll("iframe, frame");
+
+    console.log(
+      `[Link Collector] ${sourceName}: found ${frames.length} frame(s)`
+    );
+
+    for (let index = 0; index < frames.length; index++) {
+      const frame = frames[index];
+
+      try {
+        const frameDocument = frame.contentDocument;
+
+        // If Firefox allows access, scan that embedded page too.
+        if (frameDocument) {
+          const frameUrl =
+            frameDocument.location?.href ||
+            frame.src ||
+            "unknown frame URL";
+
+          scanDocument(
+            frameDocument,
+            `${sourceName} → frame ${index}: ${frameUrl}`
+          );
+        }
+      } catch (error) {
+        // This normally happens for a frame from another website.
+        console.warn(
+          `[Link Collector] Cannot read frame ${index} inside ${sourceName}`,
+          error
+        );
+      }
+    }
+  }
+
+  // Begin with the main webpage. The function will then scan its frames,
+  // and frames within frames, when the browser permits it.
+  scanDocument(document, `main page: ${location.href}`);
+
+  // Add Telegram URLs that are stored in page configuration/JavaScript
+  // rather than normal <a href="..."> elements.
+  for (const telegramUrl of collectTelegramLinks()) {
+    links.add(telegramUrl);
+  }
+  
+  
+  for (const tawkUrl of collectTawkLinks()) {
+    links.add(tawkUrl);
+  }
+  
+  for (
+    const apkUrl of
+    collectApkLinks()
+  ) {
+    links.add(
+      apkUrl
+    );
+  }
+  
+  for (
+    const pageUrl of
+    collectUrlsFromPageHtml()
+  ) {
+    links.add(
+      pageUrl
+    );
+  }
+  
+  const result = [...links];
+
+  console.log(
+    `[Link Collector] Total unique HTTP(S) links: ${result.length}`
+  );
+
+  console.log(
+    "[Link Collector] Telegram links found:",
+    result.filter((url) =>
+      /(?:t\.me|telegram\.me|telegram\.dog)/i.test(url)
+    )
+  );
+
+  return result;
 }

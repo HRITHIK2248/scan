@@ -7,6 +7,150 @@
   ============================================================
 */
 
+const pageAnalysisContactInformation =
+  document.getElementById(
+    "pageAnalysisContactInformation"
+  );
+
+const pageAnalysisAddressesButton =
+  document.getElementById(
+    "pageAnalysisAddressesButton"
+  );
+
+const pageAnalysisSection =
+  document.getElementById(
+    "pageAnalysisSection"
+  );
+
+const pageAnalysisStatus =
+  document.getElementById(
+    "pageAnalysisStatus"
+  );
+
+const pageAnalysisResults =
+  document.getElementById(
+    "pageAnalysisResults"
+  );
+
+const pageAnalysisPhones =
+  document.getElementById(
+    "pageAnalysisPhones"
+  );
+
+const pageAnalysisPossiblePhones =
+  document.getElementById(
+    "pageAnalysisPossiblePhones"
+  );
+
+const pageAnalysisDomains =
+  document.getElementById(
+    "pageAnalysisDomains"
+  );
+
+const pageAnalysisUrls =
+  document.getElementById(
+    "pageAnalysisUrls"
+  );
+
+const pageAnalysisEmails =
+  document.getElementById(
+    "pageAnalysisEmails"
+  );
+
+const pageAnalysisAddresses =
+  document.getElementById(
+    "pageAnalysisAddresses"
+  );
+
+const pageAnalysisPhoneList =
+  document.getElementById(
+    "pageAnalysisPhoneList"
+  );
+
+const pageAnalysisPossiblePhoneList =
+  document.getElementById(
+    "pageAnalysisPossiblePhoneList"
+  );
+
+const pageAnalysisDomainList =
+  document.getElementById(
+    "pageAnalysisDomainList"
+  );
+
+const pageAnalysisUrlList =
+  document.getElementById(
+    "pageAnalysisUrlList"
+  );
+
+const pageAnalysisWebLinks =
+  document.getElementById(
+    "pageAnalysisWebLinks"
+  );
+
+const pageAnalysisDomainsButton =
+  document.getElementById(
+    "pageAnalysisDomainsButton"
+  );
+
+const pageAnalysisUrlsButton =
+  document.getElementById(
+    "pageAnalysisUrlsButton"
+  );
+  
+const pageAnalysisSocialMedia =
+  document.getElementById(
+    "pageAnalysisSocialMedia"
+  );
+
+const pageAnalysisSocialMediaList =
+  document.getElementById(
+    "pageAnalysisSocialMediaList"
+  );
+
+const showAllUrlsButton =
+  document.getElementById(
+    "showAllUrlsButton"
+  );
+
+const pageAnalysisEmailList =
+  document.getElementById(
+    "pageAnalysisEmailList"
+  );
+
+const pageAnalysisAddressList =
+  document.getElementById(
+    "pageAnalysisAddressList"
+  );
+
+const pageAnalysisEmpty =
+  document.getElementById(
+    "pageAnalysisEmpty"
+  );
+
+const websiteHost =
+  document.getElementById(
+    "websiteHost"
+  ) || {
+    textContent: ""
+  };
+
+const websitePort =
+  document.getElementById(
+    "websitePort"
+  ) || {
+    textContent: ""
+  };
+
+const websiteHash =
+  document.getElementById(
+    "websiteHash"
+  ) || {
+    textContent: ""
+  };
+
+const SNAPSHOT_DEFAULT_COUNTRY =
+  "IN";
+  
 const scanButton =
   document.getElementById(
     "scanButton"
@@ -16,7 +160,10 @@ const snapshotButton =
   document.getElementById(
     "snapshotButton"
   );
-
+const analyzePageButton =
+  document.getElementById(
+    "analyzePageButton"
+  );
 const clearButton =
   document.getElementById(
     "clearButton"
@@ -567,6 +714,16 @@ const copyQrButton =
   ============================================================
 */
 
+const selectedText =
+  document.getElementById(
+    "selectedText"
+  );
+
+const copySelectedTextButton =
+  document.getElementById(
+    "copySelectedTextButton"
+  );
+
 const snapshotTextBlock =
   document.getElementById(
     "snapshotTextBlock"
@@ -587,6 +744,16 @@ const detectedPhones =
     "detectedPhones"
   );
 
+const detectedPossiblePhones =
+  document.getElementById(
+    "detectedPossiblePhones"
+  );
+
+const detectedDomains =
+  document.getElementById(
+    "detectedDomains"
+  );
+
 const detectedUrls =
   document.getElementById(
     "detectedUrls"
@@ -605,6 +772,16 @@ const emailList =
 const phoneList =
   document.getElementById(
     "phoneList"
+  );
+
+const possiblePhoneList =
+  document.getElementById(
+    "possiblePhoneList"
+  );
+
+const domainList =
+  document.getElementById(
+    "domainList"
   );
 
 const urlList =
@@ -663,6 +840,25 @@ const copyEventUrlButton =
     "copyEventUrlButton"
   );
 
+const pageAnalysisPhoneNumbers =
+  document.getElementById(
+    "pageAnalysisPhoneNumbers"
+  );
+
+const pageAnalysisPhonesButton =
+  document.getElementById(
+    "pageAnalysisPhonesButton"
+  );
+
+const pageAnalysisPossiblePhonesButton =
+  document.getElementById(
+    "pageAnalysisPossiblePhonesButton"
+  );
+
+const pageAnalysisEmailsButton =
+  document.getElementById(
+    "pageAnalysisEmailsButton"
+  );
 
 /*
   ============================================================
@@ -673,12 +869,33 @@ const copyEventUrlButton =
 let latestResult =
   null;
 
+let showAllWebsiteUrls =
+  false;
 
 /*
   ============================================================
   11. Button listeners
   ============================================================
 */
+
+
+
+
+
+copySelectedTextButton.addEventListener(
+  "click",
+  copySelectedSnapshotText
+);
+
+copySmsRecipientButton.addEventListener(
+  "click",
+  copySmsRecipient
+);
+
+copySmsMessageButton.addEventListener(
+  "click",
+  copySmsMessage
+);
 
 scanButton.addEventListener(
   "click",
@@ -688,6 +905,11 @@ scanButton.addEventListener(
 snapshotButton.addEventListener(
   "click",
   startSnapshot
+);
+
+analyzePageButton.addEventListener(
+  "click",
+  analyzeWebpage
 );
 
 clearButton.addEventListener(
@@ -823,6 +1045,7 @@ copyEventOrganizerButton.addEventListener(
   )
 );
 
+
 copyEventUrlButton.addEventListener(
   "click",
   () => copyEventField(
@@ -830,6 +1053,106 @@ copyEventUrlButton.addEventListener(
     "Event URL copied."
   )
 );
+
+
+pageAnalysisDomainsButton.addEventListener(
+  "click",
+  () => {
+    const isHidden =
+      pageAnalysisDomainList.classList.toggle(
+        "hidden"
+      );
+
+    pageAnalysisDomainsButton.textContent =
+      pageAnalysisDomainsButton.textContent.replace(
+        isHidden ? "▴" : "▾",
+        isHidden ? "▾" : "▴"
+      );
+  }
+);
+
+pageAnalysisUrlsButton.addEventListener(
+  "click",
+  () => {
+    const isHidden =
+      pageAnalysisUrlList.classList.toggle(
+        "hidden"
+      );
+
+    pageAnalysisUrlsButton.textContent =
+      pageAnalysisUrlsButton.textContent.replace(
+        isHidden ? "▴" : "▾",
+        isHidden ? "▾" : "▴"
+      );
+  }
+);
+
+pageAnalysisPhonesButton.addEventListener(
+  "click",
+  () => {
+    const isHidden =
+      pageAnalysisPhoneList.classList.toggle(
+        "hidden"
+      );
+
+    pageAnalysisPhonesButton.textContent =
+      pageAnalysisPhonesButton.textContent.replace(
+        isHidden ? "▴" : "▾",
+        isHidden ? "▾" : "▴"
+      );
+  }
+);
+
+pageAnalysisPossiblePhonesButton.addEventListener(
+  "click",
+  () => {
+    const isHidden =
+      pageAnalysisPossiblePhoneList.classList.toggle(
+        "hidden"
+      );
+
+    pageAnalysisPossiblePhonesButton.textContent =
+      pageAnalysisPossiblePhonesButton.textContent.replace(
+        isHidden ? "▴" : "▾",
+        isHidden ? "▾" : "▴"
+      );
+  }
+);
+
+pageAnalysisEmailsButton.addEventListener(
+  "click",
+  () => {
+    const isHidden =
+      pageAnalysisEmailList.classList.toggle(
+        "hidden"
+      );
+
+    pageAnalysisEmailsButton.textContent =
+      pageAnalysisEmailsButton.textContent.replace(
+        isHidden ? "▴" : "▾",
+        isHidden ? "▾" : "▴"
+      );
+  }
+);
+
+pageAnalysisAddressesButton.addEventListener(
+  "click",
+  () => {
+    const isHidden =
+      pageAnalysisAddressList.classList.toggle(
+        "hidden"
+      );
+
+    pageAnalysisAddressesButton.textContent =
+      pageAnalysisAddressesButton.textContent.replace(
+        isHidden ? "▴" : "▾",
+        isHidden ? "▾" : "▴"
+      );
+  }
+);
+
+
+
 /*
   ============================================================
   12. Load saved result
@@ -860,6 +1183,8 @@ async function loadLatestResult() {
     );
   }
 }
+
+
 
 
 /*
@@ -1203,7 +1528,18 @@ async function openWebsiteUrl() {
   }
 }
 
+async function copySelectedSnapshotText() {
+  if (
+    !selectedText.value
+  ) {
+    return;
+  }
 
+  await copyText(
+    selectedText.value,
+    "Selected text copied."
+  );
+}
 
 
 async function copySmsRecipient() {
@@ -1458,6 +1794,353 @@ function showCopyStatus(
 
 /*
   ============================================================
+  webpage analze 
+  ============================================================
+*/
+
+function addExpandableDetectedItems(
+  container,
+  values,
+  copyButtonText,
+  sectionName
+) {
+  const showMoreButton =
+    document.createElement(
+      "button"
+    );
+
+  showMoreButton.type =
+    "button";
+
+  showMoreButton.className =
+    "show-more-button";
+
+  const renderValues =
+    (items) => {
+      container.innerHTML =
+        "";
+
+      items.forEach(
+        (value) => {
+          const displayValue =
+            typeof value ===
+            "object"
+              ? value.display
+              : value;
+
+          const copyValue =
+            typeof value ===
+            "object"
+              ? value.copyValue
+              : value;
+
+          addDetectedItem(
+            container,
+            displayValue,
+            copyButtonText,
+            copyValue
+          );
+        }
+      );
+    };
+  const renderFirstThree =
+    () => {
+      renderValues(
+        values.slice(
+          0,
+          3
+        )
+      );
+
+      if (
+        values.length >
+        3
+      ) {
+        showMoreButton.textContent =
+          `Show remaining ${sectionName} (${values.length - 3})`;
+
+        container.appendChild(
+          showMoreButton
+        );
+      }
+    };
+
+  const renderAll =
+    () => {
+      renderValues(
+        values
+      );
+
+      showMoreButton.textContent =
+        `Show fewer ${sectionName}`;
+
+      container.appendChild(
+        showMoreButton
+      );
+    };
+
+  showMoreButton.addEventListener(
+    "click",
+    () => {
+      const showingAll =
+        showMoreButton.dataset.showingAll ===
+        "true";
+
+      if (
+        showingAll
+      ) {
+        showMoreButton.dataset.showingAll =
+          "false";
+
+        renderFirstThree();
+
+        return;
+      }
+
+      showMoreButton.dataset.showingAll =
+        "true";
+
+      renderAll();
+    }
+  );
+
+  renderFirstThree();
+}
+
+function renderPageAnalysis(
+  text,
+  pageLinks = []
+) {
+
+    
+  const emails =
+    extractEmails(text);
+
+  const phones =
+    extractPhones(text);
+
+  const possiblePhones =
+    extractPossibleUnformattedPhones(
+      text,
+      phones
+    );
+
+  const textWebValues =
+    extractUrls(text);
+
+  const webValues =
+    uniqueValues([
+      ...textWebValues,
+      ...pageLinks
+    ]);
+
+  const {
+    domains,
+    urls
+  } =
+    splitDomainsAndUrls(
+      webValues
+    );
+  
+  const {
+    websiteUrls,
+    socialMediaUrls
+  } =
+    splitSocialMediaUrls(
+      urls
+    );
+  
+  const addresses =
+    extractAddresses(
+      text,
+      emails,
+      phones,
+      webValues
+    );
+  
+  pageAnalysisSocialMediaList.innerHTML =
+    "";
+  
+  pageAnalysisPhoneList.innerHTML =
+    "";
+
+  pageAnalysisPossiblePhoneList.innerHTML =
+    "";
+
+  pageAnalysisDomainList.innerHTML =
+    "";
+
+  pageAnalysisUrlList.innerHTML =
+    "";
+
+  pageAnalysisEmailList.innerHTML =
+    "";
+
+  pageAnalysisAddressList.innerHTML =
+    "";
+
+  addExpandableDetectedItems(
+    pageAnalysisPhoneList,
+    phones,
+    "Copy phone",
+    "phone numbers"
+  );
+
+  addExpandableDetectedItems(
+    pageAnalysisPossiblePhoneList,
+    possiblePhones,
+    "Copy candidate",
+    "possible phone numbers"
+  );
+  
+  
+  addExpandableDetectedItems(
+    pageAnalysisEmailList,
+    emails,
+    "Copy email",
+    "email addresses"
+  );
+
+  addExpandableDetectedItems(
+    pageAnalysisAddressList,
+    addresses,
+    "Copy address",
+    "postal addresses"
+  );
+  
+  addExpandableDetectedItems(
+    pageAnalysisDomainList,
+    domains,
+    "Copy domain",
+    "domains"
+  );
+
+
+  
+  
+  addExpandableDetectedItems(
+    pageAnalysisUrlList,
+    websiteUrls,
+    "Copy URL",
+    "website URLs"
+  );
+
+  socialMediaUrls.forEach(
+    (socialLink) => {
+      addSocialMediaItem(
+        pageAnalysisSocialMediaList,
+        socialLink.platform,
+        socialLink.urls
+      );
+    }
+  );
+
+  
+
+  const hasResults =
+    phones.length > 0 ||
+    possiblePhones.length > 0 ||
+    domains.length > 0 ||
+    websiteUrls.length > 0 ||
+    socialMediaUrls.length > 0 ||
+    emails.length > 0 ||
+    addresses.length > 0;
+  
+  pageAnalysisPhonesButton.textContent =
+    `Detected phone numbers (${phones.length}) ▾`;
+  
+  pageAnalysisPhones.classList.toggle(
+    "hidden",
+    phones.length === 0
+  );
+  
+  pageAnalysisPossiblePhonesButton.textContent =
+    `Possible phone numbers (${possiblePhones.length}) ▾`;
+  
+  pageAnalysisPossiblePhones.classList.toggle(
+    "hidden",
+    possiblePhones.length === 0
+  );
+  
+  pageAnalysisPhoneNumbers.classList.toggle(
+    "hidden",
+    phones.length === 0 &&
+    possiblePhones.length === 0
+  );
+  
+  pageAnalysisWebLinks.classList.toggle(
+    "hidden",
+    domains.length === 0 &&
+    websiteUrls.length === 0
+  );
+  
+  pageAnalysisDomainsButton.textContent =
+    `Domains (${domains.length}) ▾`;
+  
+  pageAnalysisDomains.classList.toggle(
+    "hidden",
+    domains.length === 0
+  );
+  
+  pageAnalysisUrlsButton.textContent =
+    `Website URLs (${websiteUrls.length}) ▾`;
+  
+  pageAnalysisUrls.classList.toggle(
+    "hidden",
+    websiteUrls.length === 0
+  );
+
+  pageAnalysisSocialMedia.classList.toggle(
+    "hidden",
+    socialMediaUrls.length === 0
+  );
+  
+  pageAnalysisEmailsButton.textContent =
+    `Email Addresses (${emails.length}) ▾`;
+  
+  pageAnalysisEmails.classList.toggle(
+    "hidden",
+    emails.length === 0
+  );
+  
+  pageAnalysisAddressesButton.textContent =
+    `Potential Postal Addresses (${addresses.length}) ▾`;
+  
+  pageAnalysisAddresses.classList.toggle(
+    "hidden",
+    addresses.length === 0
+  );
+  
+  pageAnalysisContactInformation.classList.toggle(
+    "hidden",
+    phones.length === 0 &&
+    possiblePhones.length === 0 &&
+    emails.length === 0 &&
+    addresses.length === 0
+  );
+  
+  pageAnalysisResults.classList.toggle(
+    "hidden",
+    !hasResults
+  );
+
+  pageAnalysisEmpty.classList.toggle(
+    "hidden",
+    hasResults
+  );
+
+  pageAnalysisStatus.textContent =
+    hasResults
+      ? "Analysis complete."
+      : "No matching information found.";
+
+  pageAnalysisSection.classList.remove(
+    "hidden"
+  );
+}
+
+/*
+  ============================================================
   23. Render the result
   ============================================================
 */
@@ -1490,24 +2173,22 @@ function renderResult(
 
     return;
   }
+  
+  if (
+    result.type ===
+    "page-analysis"
+  ) {
+    renderKeyboardPageAnalysis(
+      result
+    );
 
+    return;
+  }
+  
   renderRawPayload(
     result
   );
 
-  renderWebsiteResult(
-    result
-  );
-
-  renderEmailResult(
-    result
-  );
-  renderContactResult(
-    result
-  );
-  renderEventResult(
-    result
-  );
   if (
     result.type ===
     "snapshot"
@@ -1519,6 +2200,22 @@ function renderResult(
     return;
   }
 
+  renderWebsiteResult(
+    result
+  );
+
+  renderEmailResult(
+    result
+  );
+
+  renderContactResult(
+    result
+  );
+
+  renderEventResult(
+    result
+  );
+  
   emptyState.classList.add(
     "hidden"
   );
@@ -1668,10 +2365,20 @@ function renderWebsiteResult(
   let url;
 
   try {
+    
+    let rawUrl =
+     result.rawPayload.trim();
+
+    if (
+     /^www\./i.test(rawUrl)
+    ) {
+      rawUrl =
+       `https://${rawUrl}`;
+    }
+
     url =
-      new URL(
-        result.rawPayload.trim()
-      );
+      new URL(rawUrl);
+    
   } catch {
     return;
   }
@@ -1699,7 +2406,18 @@ function renderWebsiteResult(
 
   websiteDomain.textContent =
     url.hostname;
+  
+  websiteHost.textContent =
+    url.host;
 
+  websitePort.textContent =
+    url.port ||
+    "Default";
+
+  websiteHash.textContent =
+    url.hash ||
+    "None";
+  
   websitePath.textContent =
     url.pathname ||
     "/";
@@ -1746,6 +2464,15 @@ function resetWebsiteDisplay() {
 
   websiteWarning.textContent =
     "";
+    
+  websiteHost.textContent =
+    "";
+
+  websitePort.textContent =
+    "";
+
+  websiteHash.textContent =
+    "";  
 
   websiteWarning.classList.add(
     "hidden"
@@ -2444,6 +3171,13 @@ function renderSnapshotResult(
   copyStatus.textContent =
     "";
 
+  resetWebsiteDisplay();
+  resetEmailDisplay();
+  resetContactDisplay();
+  resetEventDisplay();
+  renderPhoneDetails(null);
+  renderSmsDetails(null);
+
   imageSection.classList.remove(
     "hidden"
   );
@@ -2454,6 +3188,18 @@ function renderSnapshotResult(
 
   copyHighlightedButton.disabled =
     !result.highlightedScreenshot;
+
+  if (
+    result.highlightedScreenshot
+  ) {
+    highlightedScreenshot.classList.remove(
+      "hidden"
+    );
+  } else {
+    highlightedScreenshot.classList.add(
+      "hidden"
+    );
+  }
 
   qrOnlyImage.removeAttribute(
     "src"
@@ -2470,14 +3216,31 @@ function renderSnapshotResult(
   snapshotTextBlock.classList.remove(
     "hidden"
   );
+  
+  const selectedTextBlock =
+    document.getElementById(
+      "selectedTextBlock"
+    );
+
+  selectedTextBlock.classList.remove(
+    "hidden"
+  );
+
+  const text =
+    result.detectedText ||
+    result.selectedText ||
+    "";
+
+  selectedText.value =
+    text;
+
+  copySelectedTextButton.disabled =
+    !text;
 
   renderDetectedItems(
-    result.detectedText ||
-      result.selectedText ||
-      ""
+    text
   );
 }
-
 
 /*
   ============================================================
@@ -2528,6 +3291,431 @@ function renderImages(
   }
 }
 
+function addDetectedItem(
+  container,
+  value,
+  buttonText,
+  copyValue = value
+) {
+  const row =
+    document.createElement("div");
+
+  row.className =
+    "detected-row";
+
+  const valueElement =
+    document.createElement("code");
+
+  valueElement.className =
+    "detected-value";
+
+  valueElement.textContent =
+    value;
+
+  const button =
+    document.createElement("button");
+
+  button.type =
+    "button";
+
+  button.className =
+    "copy-button";
+
+  button.textContent =
+    buttonText;
+
+  button.addEventListener(
+    "click",
+    () => {
+      copyText(
+        copyValue,
+        `${buttonText.replace(
+          /^Copy\s*/i,
+          ""
+        )} copied.`
+      );
+    }
+  );
+
+  row.appendChild(
+    valueElement
+  );
+
+  row.appendChild(
+    button
+  );
+
+  container.appendChild(
+    row
+  );
+}
+
+
+/*
+  ============================================================
+  social media items 
+  ============================================================
+*/
+
+function getSocialMediaDetails(
+  platform,
+  url
+) {
+  try {
+    
+    
+    const fullUrl =
+      /^https?:\/\//i.test(
+        url
+      )
+        ? url
+        : `https://${url}`;
+
+    const parsedUrl =
+      new URL(
+        fullUrl
+      );
+
+    const parts =
+      parsedUrl.pathname
+        .split(
+          "/"
+        )
+        .filter(
+          Boolean
+        );
+
+    const firstPart =
+      parts[0] ||
+      "";
+
+    if (
+      platform ===
+      "Telegram"
+    ) {
+      if (
+        firstPart ===
+        "joinchat"
+      ) {
+        const inviteCode =
+          parts[1] ||
+          "";
+
+        return {
+          label:
+            `Telegram invite: ${inviteCode}`,
+          value:
+            inviteCode
+        };
+      }
+
+      if (
+        firstPart.startsWith(
+          "+"
+        )
+      ) {
+        const inviteCode =
+          firstPart.slice(
+            1
+          );
+
+        return {
+          label:
+            `Telegram invite: ${inviteCode}`,
+          value:
+            inviteCode
+        };
+      }
+      
+      
+      
+      return {
+        label:
+          `@${firstPart}`,
+        value:
+          firstPart
+      };
+    }
+    
+    if (
+        platform ===
+        "Instagram"
+      ) {
+        return {
+          label:
+            `@${firstPart}`,
+          value:
+            firstPart
+        };
+      }
+    
+    return {
+      label:
+        firstPart ||
+        parsedUrl.hostname,
+
+      value:
+        firstPart ||
+        parsedUrl.hostname
+    };
+  } catch (
+    error
+  ) {
+    return {
+      label:
+        url,
+
+      value:
+        url
+    };
+  }
+}
+
+
+function addSocialMediaItem(
+  container,
+  platform,
+  urls
+) {
+  const item =
+    document.createElement(
+      "div"
+    );
+
+  item.className =
+    "social-media-item";
+
+  const platformButton =
+    document.createElement(
+      "button"
+    );
+
+  platformButton.type =
+    "button";
+
+  platformButton.className =
+    "social-media-platform-button";
+
+  platformButton.textContent =
+    `${platform} (${urls.length}) ▾`;
+
+  const details =
+    document.createElement(
+      "div"
+    );
+
+  details.className =
+    "social-media-details hidden";
+
+  const createSocialRow =
+    (url) => {
+      const socialDetails =
+        getSocialMediaDetails(
+          platform,
+          url
+        );
+
+      const row =
+        document.createElement(
+          "div"
+        );
+
+      row.className =
+        "social-media-link-row";
+
+      const identifier =
+        document.createElement(
+          "code"
+        );
+
+      identifier.className =
+        "detected-value";
+
+      identifier.textContent =
+        socialDetails.label;
+
+      const copyDetailsButton =
+        document.createElement(
+          "button"
+        );
+
+      copyDetailsButton.type =
+        "button";
+
+      copyDetailsButton.className =
+        "copy-button";
+
+      copyDetailsButton.textContent =
+        "Copy\ndetails";
+
+      copyDetailsButton.addEventListener(
+        "click",
+        () => {
+          copyText(
+            socialDetails.value,
+            copyDetailsButton
+          );
+        }
+      );
+
+      const copyUrlButton =
+        document.createElement(
+          "button"
+        );
+
+      copyUrlButton.type =
+        "button";
+
+      copyUrlButton.className =
+        "copy-button";
+
+      copyUrlButton.textContent =
+        "Copy\nURL";
+
+      copyUrlButton.addEventListener(
+        "click",
+        () => {
+          copyText(
+            url,
+            copyUrlButton
+          );
+        }
+      );
+
+      row.appendChild(
+        identifier
+      );
+
+      row.appendChild(
+        copyDetailsButton
+      );
+
+      row.appendChild(
+        copyUrlButton
+      );
+
+      return row;
+    };
+
+  const renderLinks =
+    (links) => {
+      details.innerHTML =
+        "";
+
+      links.forEach(
+        (url) => {
+          details.appendChild(
+            createSocialRow(
+              url
+            )
+          );
+        }
+      );
+    };
+
+  const renderFirstThree =
+    () => {
+      renderLinks(
+        urls.slice(
+          0,
+          3
+        )
+      );
+
+      if (
+        urls.length >
+        3
+      ) {
+        showMoreButton.textContent =
+          `Show remaining ${platform} links (${urls.length - 3})`;
+
+        details.appendChild(
+          showMoreButton
+        );
+      }
+    };
+
+  const renderAllLinks =
+    () => {
+      renderLinks(
+        urls
+      );
+
+      showMoreButton.textContent =
+        "Show fewer links";
+
+      details.appendChild(
+        showMoreButton
+      );
+    };
+
+  const showMoreButton =
+    document.createElement(
+      "button"
+    );
+
+  showMoreButton.type =
+    "button";
+
+  showMoreButton.className =
+    "show-more-button";
+
+  showMoreButton.addEventListener(
+    "click",
+    () => {
+      const showingAll =
+        showMoreButton.dataset.showingAll ===
+        "true";
+
+      if (
+        showingAll
+      ) {
+        showMoreButton.dataset.showingAll =
+          "false";
+
+        renderFirstThree();
+
+        return;
+      }
+
+      showMoreButton.dataset.showingAll =
+        "true";
+
+      renderAllLinks();
+    }
+  );
+
+  renderFirstThree();
+
+  platformButton.addEventListener(
+    "click",
+    () => {
+      const isHidden =
+        details.classList.toggle(
+          "hidden"
+        );
+
+      platformButton.textContent =
+        `${platform} (${urls.length}) ${
+          isHidden ? "▾" : "▴"
+        }`;
+    }
+  );
+  
+  item.appendChild(
+    platformButton
+  );
+
+  item.appendChild(
+    details
+  );
+
+  container.appendChild(
+    item
+  );
+}
+
+
 
 /*
   ============================================================
@@ -2548,9 +3736,23 @@ function renderDetectedItems(
       text
     );
 
-  const urls =
+  const possiblePhones =
+    extractPossibleUnformattedPhones(
+      text,
+      phones
+    );
+
+  const webValues =
     extractUrls(
       text
+    );
+
+  const {
+    domains,
+    urls
+  } =
+    splitDomainsAndUrls(
+      webValues
     );
 
   const addresses =
@@ -2558,13 +3760,19 @@ function renderDetectedItems(
       text,
       emails,
       phones,
-      urls
+      webValues
     );
 
   emailList.innerHTML =
     "";
 
   phoneList.innerHTML =
+    "";
+
+  possiblePhoneList.innerHTML =
+    "";
+
+  domainList.innerHTML =
     "";
 
   urlList.innerHTML =
@@ -2576,6 +3784,8 @@ function renderDetectedItems(
   const hasDetectedItems =
     emails.length > 0 ||
     phones.length > 0 ||
+    possiblePhones.length > 0 ||
+    domains.length > 0 ||
     urls.length > 0 ||
     addresses.length > 0;
 
@@ -2597,6 +3807,16 @@ function renderDetectedItems(
   detectedPhones.classList.toggle(
     "hidden",
     phones.length === 0
+  );
+
+  detectedPossiblePhones.classList.toggle(
+    "hidden",
+    possiblePhones.length === 0
+  );
+
+  detectedDomains.classList.toggle(
+    "hidden",
+    domains.length === 0
   );
 
   detectedUrls.classList.toggle(
@@ -2630,6 +3850,27 @@ function renderDetectedItems(
     }
   );
 
+  possiblePhones.forEach(
+    (phone) => {
+      addDetectedItem(
+        possiblePhoneList,
+        phone,
+        "Copy candidate",
+        phone
+      );
+    }
+  );
+
+  domains.forEach(
+    (domain) => {
+      addDetectedItem(
+        domainList,
+        domain,
+        "Copy domain"
+      );
+    }
+  );
+
   urls.forEach(
     (url) => {
       addDetectedItem(
@@ -2652,6 +3893,8 @@ function renderDetectedItems(
 }
 
 
+
+
 /*
   ============================================================
   30. Snapshot extraction helpers
@@ -2671,23 +3914,35 @@ function extractEmails(
   );
 }
 
+
 function extractPhones(
   text
 ) {
   const matches =
     text.match(
-      /(?:\+\d{1,3}[\s.-]?)?(?:\(?\d{2,5}\)?[\s.-]?)?\d{3,4}[\s.-]?\d{3,4}/g
+      /(?:\+\d{1,3}[\s().-]*)?(?:\(?\d{2,5}\)?[\s.-]*)?\d(?:[\d\s().-]*\d)?/g
     ) || [];
 
-  const phones =
-    [];
+  const phones = [];
+  const seen = new Set();
 
   matches.forEach(
     (value) => {
       const display =
         cleanDetectedValue(
           value
-        );
+        )
+          .replace(
+            /\s+/g,
+            " "
+          )
+          .trim();
+
+      if (
+        !display
+      ) {
+        return;
+      }
 
       const digits =
         display.replace(
@@ -2695,62 +3950,696 @@ function extractPhones(
           ""
         );
 
+      /*
+        General international phone-number length range.
+      */
       if (
-        digits.length <
-          7 ||
-        digits.length >
-          15
+        digits.length < 7 ||
+        digits.length > 15
       ) {
         return;
       }
 
+      /*
+        Reject short numeric OTP, PIN, verification, and
+        reference-code lengths.
+      */
+      if (
+        /^\d{4,6}$/.test(
+          digits
+        )
+      ) {
+        return;
+      }
+
+      /*
+        Reject two 6-digit groups such as:
+        659020 114848
+      */
+      if (
+        /^\d{6}\s+\d{6}$/.test(
+          display
+        )
+      ) {
+        return;
+      }
+
+      /*
+        Reject simple ascending/descending or separated
+        sequences such as:
+        1234567890
+        1 2 3 4 5 6 7 8 9
+        9876543210
+      */
+      if (
+        /^(?:[0-9][\s.-]*){7,15}$/.test(
+          display
+        )
+      ) {
+        const digitArray =
+          digits.split(
+            ""
+          );
+
+        const ascending =
+          digitArray.every(
+            (digit, index, array) =>
+              index === 0 ||
+              Number(digit) ===
+                Number(
+                  array[
+                    index - 1
+                  ]
+                ) + 1
+          );
+
+        const descending =
+          digitArray.every(
+            (digit, index, array) =>
+              index === 0 ||
+              Number(digit) ===
+                Number(
+                  array[
+                    index - 1
+                  ]
+                ) - 1
+          );
+
+        if (
+          ascending ||
+          descending
+        ) {
+          return;
+        }
+      }
+
+      /*
+        Reject 4-digit years and year ranges.
+      */
+      if (
+        /^\d{4}$/.test(
+          display
+        ) ||
+        /^\d{4}\s*[-/]\s*\d{4}$/.test(
+          display
+        )
+      ) {
+        return;
+      }
+
+      /*
+        Reject money/price/decimal formats.
+
+        Examples:
+        ₹555.00
+        $1,250.50
+        555.00 50000
+        499.99
+      */
+      const looksLikeAmount =
+        /(?:₹|\$|€|£)?\s*\d{1,3}(?:,\d{3})*(?:\.\d{2})(?:\s+\d{1,6})?/.test(
+          display
+        );
+
+      if (
+        looksLikeAmount
+      ) {
+        return;
+      }
+
+      /*
+        If dots are present, accept only a clear telephone
+        grouping format such as:
+        555.123.4567
+        +91.98765.43210
+      */
+      if (
+        display.includes(
+          "."
+        ) &&
+        !/^\+?\d{1,3}(?:[.\s-]\d{2,5}){2,4}$/.test(
+          display
+        )
+      ) {
+        return;
+      }
+
+      const hasInternationalPrefix =
+        /^\s*(?:\+|00)\d/.test(
+          display
+        );
+
+      const hasParentheses =
+        /[()]/.test(
+          display
+        );
+
+      const hasHyphen =
+        /-/.test(
+          display
+        );
+
+      const hasDot =
+        /\./.test(
+          display
+        );
+
+      const isIndianMobileTwoGroupFormat =
+        /^\s*[6-9]\d{4}\s\d{5}\s*$/.test(
+          display
+        );
+
+      const spaceGroups =
+        display
+          .split(
+            /\s+/
+          )
+          .filter(
+            Boolean
+          );
+
+      /*
+        Allows clear phone groups such as:
+        020 7946 0958
+        +91 98765 43210
+        987 654 3210
+
+        Does not allow:
+        20000 13
+        17062026 2029
+      */
+      const hasSafeSpaceGrouping =
+        spaceGroups.length >=
+          3 &&
+        spaceGroups.every(
+          (group) =>
+            /^\+?\d{2,5}$/.test(
+              group
+            )
+        ) &&
+        digits.length >=
+          10;
+
+      const hasLongDateLikeGroup =
+        spaceGroups.some(
+          (group) =>
+            /^\d{6}$/.test(
+              group
+            ) ||
+            /^\d{8}$/.test(
+              group
+            )
+        );
+
+      const hasShortTrailingGroup =
+        spaceGroups.length >=
+          2 &&
+        /^\d{2,4}$/.test(
+          spaceGroups[
+            spaceGroups.length - 1
+          ]
+        );
+
+      if (
+        hasLongDateLikeGroup &&
+        hasShortTrailingGroup
+      ) {
+        return;
+      }
+
+      /*
+        Require a strong format indicator for detection.
+        A completely unformatted 10–15 digit string is not
+        treated as a phone number by itself, because it can
+        be an account ID, order number, timestamp, or URL path.
+      */
+      const hasStrongPhoneFormatting =
+        hasInternationalPrefix ||
+        hasParentheses ||
+        hasHyphen ||
+        hasDot ||
+        hasSafeSpaceGrouping ||
+        isIndianMobileTwoGroupFormat;
+
+      if (
+        !hasStrongPhoneFormatting
+      ) {
+        return;
+      }
+
+      const normalized =
+        display.replace(
+          /[^\d+]/g,
+          ""
+        );
+
+      if (
+        seen.has(
+          normalized
+        )
+      ) {
+        return;
+      }
+
+      seen.add(
+        normalized
+      );
+
       phones.push({
         display,
-
-        copyValue:
-          display
+        copyValue: display
       });
     }
   );
 
-  const seen =
-    new Set();
-
-  return phones.filter(
-    (phone) => {
-      if (
-        seen.has(
-          phone.copyValue
-        )
-      ) {
-        return false;
-      }
-
-      seen.add(
-        phone.copyValue
-      );
-
-      return true;
-    }
-  );
+  return phones;
 }
 
-function extractUrls(
-  text
+function extractPossibleUnformattedPhones(
+  text,
+  detectedPhones = []
 ) {
   const matches =
     text.match(
-      /\bhttps?:\/\/[^\s<>"']+|\b(?:www\.)?[a-z0-9-]+(?:\.[a-z0-9-]+)+\b/gi
+      /\b\d{12}\b/g
+    ) || [];
+
+  const alreadyDetected =
+    new Set(
+      detectedPhones.map(
+        (phone) =>
+          phone.copyValue.replace(
+            /\D/g,
+            ""
+          )
+      )
+    );
+
+  const possiblePhones =
+    [];
+  const seen =
+    new Set();
+
+  matches.forEach(
+    (value) => {
+      /*
+        Accept only a bare India international-mobile pattern:
+        91 + 10-digit mobile number beginning with 6–9.
+
+        Example accepted:
+        919652770411
+      */
+      if (
+        !/^91[6-9]\d{9}$/.test(
+          value
+        )
+      ) {
+        return;
+      }
+
+      if (
+        alreadyDetected.has(
+          value
+        ) ||
+        seen.has(
+          value
+        )
+      ) {
+        return;
+      }
+
+      /*
+        Reject simple ascending and descending digit sequences.
+      */
+      const digits =
+        value.split(
+          ""
+        );
+
+      const ascending =
+        digits.every(
+          (digit, index, array) =>
+            index === 0 ||
+            Number(digit) ===
+              Number(
+                array[
+                  index - 1
+                ]
+              ) + 1
+        );
+
+      const descending =
+        digits.every(
+          (digit, index, array) =>
+            index === 0 ||
+            Number(digit) ===
+              Number(
+                array[
+                  index - 1
+                ]
+              ) - 1
+        );
+
+      if (
+        ascending ||
+        descending
+      ) {
+        return;
+      }
+
+      seen.add(
+        value
+      );
+
+      possiblePhones.push(
+        value
+      );
+    }
+  );
+
+  return possiblePhones;
+}
+
+function extractUrls(text) {
+  const matches =
+    text.match(
+      /(?:https?:\/\/|www\.)[^\s<>"']+|(?:[a-z0-9-]+\.)+[a-z]{2,63}(?:\/[^\s<>"']*)?/gi
     ) || [];
 
   return uniqueValues(
-    matches.map(
-      (value) =>
-        cleanDetectedValue(
-          value
-        )
-    )
+    matches
+      .map((value) =>
+        cleanDetectedValue(value)
+      )
+      .filter((value) =>
+        isRecognizedUrl(value)
+      )
   );
+}
+
+function isRecognizedUrl(value) {
+  let candidate =
+    value.trim();
+
+  if (
+    /^www\./i.test(candidate)
+  ) {
+    candidate =
+      `https://${candidate}`;
+  } else if (
+    !/^[a-z][a-z0-9+.-]*:\/\//i.test(
+      candidate
+    )
+  ) {
+    candidate =
+      `https://${candidate}`;
+  }
+
+  try {
+    const url =
+      new URL(candidate);
+
+    return (
+      (
+        url.protocol === "http:" ||
+        url.protocol === "https:"
+      ) &&
+      Boolean(url.hostname) &&
+      url.hostname.includes(".")
+    );
+  } catch {
+    return false;
+  }
+}
+
+
+function getSocialMediaPlatform(
+  value
+) {
+  let candidate =
+    value
+      .trim();
+
+  if (
+    /^www\./i.test(
+      candidate
+    )
+  ) {
+    candidate =
+      `https://${candidate}`;
+  } else if (
+    !/^[a-z][a-z0-9+.-]*:\/\//i.test(
+      candidate
+    )
+  ) {
+    candidate =
+      `https://${candidate}`;
+  }
+
+  try {
+    const hostname =
+      new URL(
+        candidate
+      )
+        .hostname
+        .toLowerCase()
+        .replace(
+          /^www\./,
+          ""
+        );
+
+    if (
+      hostname === "t.me" ||
+      hostname.endsWith(
+        ".t.me"
+      ) ||
+      hostname === "telegram.me" ||
+      hostname.endsWith(
+        ".telegram.me"
+      ) ||
+      hostname === "telegram.org" ||
+      hostname.endsWith(
+        ".telegram.org"
+      )
+    ) {
+      return "Telegram";
+    }
+
+    if (
+      hostname === "instagram.com" ||
+      hostname.endsWith(
+        ".instagram.com"
+      )
+    ) {
+      return "Instagram";
+    }
+
+    if (
+      hostname === "facebook.com" ||
+      hostname.endsWith(
+        ".facebook.com"
+      ) ||
+      hostname === "fb.com" ||
+      hostname.endsWith(
+        ".fb.com"
+      ) ||
+      hostname === "fb.me" ||
+      hostname.endsWith(
+        ".fb.me"
+      )
+    ) {
+      return "Facebook";
+    }
+
+    if (
+      hostname === "wa.me" ||
+      hostname.endsWith(
+        ".wa.me"
+      ) ||
+      hostname === "whatsapp.com" ||
+      hostname.endsWith(
+        ".whatsapp.com"
+      )
+    ) {
+      return "WhatsApp";
+    }
+
+    if (
+      hostname === "youtube.com" ||
+      hostname.endsWith(
+        ".youtube.com"
+      ) ||
+      hostname === "youtu.be" ||
+      hostname.endsWith(
+        ".youtu.be"
+      )
+    ) {
+      return "YouTube";
+    }
+
+    if (
+      hostname === "tiktok.com" ||
+      hostname.endsWith(
+        ".tiktok.com"
+      )
+    ) {
+      return "TikTok";
+    }
+
+    if (
+      hostname === "x.com" ||
+      hostname.endsWith(
+        ".x.com"
+      ) ||
+      hostname === "twitter.com" ||
+      hostname.endsWith(
+        ".twitter.com"
+      )
+    ) {
+      return "X / Twitter";
+    }
+
+    if (
+      hostname === "discord.gg" ||
+      hostname.endsWith(
+        ".discord.gg"
+      ) ||
+      hostname === "discord.com" ||
+      hostname.endsWith(
+        ".discord.com"
+      )
+    ) {
+      return "Discord";
+    }
+  } catch {
+    return "";
+  }
+
+  return "";
+}
+
+function splitSocialMediaUrls(
+  urls
+) {
+  const websiteUrls =
+    [];
+
+  const socialMediaMap =
+    new Map();
+
+  urls.forEach(
+    (url) => {
+      const platform =
+        getSocialMediaPlatform(
+          url
+        );
+
+      if (
+        !platform
+      ) {
+        websiteUrls.push(
+          url
+        );
+
+        return;
+      }
+
+      if (
+        !socialMediaMap.has(
+          platform
+        )
+      ) {
+        socialMediaMap.set(
+          platform,
+          []
+        );
+      }
+
+      socialMediaMap
+        .get(
+          platform
+        )
+        .push(
+          url
+        );
+    }
+  );
+
+  const socialMediaUrls =
+    [
+      ...socialMediaMap.entries()
+    ].map(
+      ([
+        platform,
+        platformUrls
+      ]) => ({
+        platform,
+        urls:
+          uniqueValues(
+            platformUrls
+          )
+      })
+    );
+
+  return {
+    websiteUrls:
+      uniqueValues(
+        websiteUrls
+      ),
+
+    socialMediaUrls
+  };
+}
+
+function splitDomainsAndUrls(
+  values
+) {
+  const domains =
+    [];
+
+  const urls =
+    [];
+
+  values.forEach(
+    (value) => {
+      const clean =
+        value.trim();
+
+      /*
+        Domain only:
+        - no http:// or https://
+        - no www.
+        - no path, query, or fragment
+        Examples:
+        XMX777.CC
+        example.com
+      */
+      const isDomainOnly =
+        /^(?:[a-z0-9-]+\.)+[a-z]{2,63}$/i.test(
+          clean
+        );
+
+      if (
+        isDomainOnly
+      ) {
+        domains.push(
+          clean
+        );
+      } else {
+        urls.push(
+          clean
+        );
+      }
+    }
+  );
+
+  return {
+    domains:
+      uniqueValues(domains),
+
+    urls:
+      uniqueValues(urls)
+  };
 }
 
 function extractAddresses(
@@ -2760,68 +4649,134 @@ function extractAddresses(
   urls
 ) {
   const lines =
-    text.split(
-      /[\r\n]+/
-    );
+    text
+      .split(/[\r\n]+/)
+      .map((line) =>
+        cleanDetectedValue(line)
+          .replace(/\s+/g, " ")
+          .trim()
+      )
+      .filter(Boolean);
 
   const excluded =
     new Set([
-      ...emails,
-
-      ...phones.map(
-        (phone) =>
-          phone.copyValue
+      ...emails.map((value) =>
+        value.toLowerCase()
       ),
-
-      ...urls
+      ...phones.map((phone) =>
+        phone.copyValue.toLowerCase()
+      ),
+      ...urls.map((value) =>
+        value.toLowerCase()
+      )
     ]);
 
-  const addresses =
-    [];
+  const addresses = [];
 
-  lines.forEach(
-    (line) => {
-      const value =
-        cleanDetectedValue(
-          line
-        );
+  lines.forEach((value) => {
+    const lower =
+      value.toLowerCase();
 
-      if (
-        !value ||
-        excluded.has(
-          value
-        )
-      ) {
-        return;
-      }
-
-      const hasNumber =
-        /\d/.test(
-          value
-        );
-
-      const hasAddressWord =
-        /\b(?:street|st|road|rd|avenue|ave|lane|ln|boulevard|blvd|building|bldg|floor|block|sector|nagar|colony|district|city|state|zip|pincode|pin code|india)\b/i.test(
-          value
-        );
-
-      if (
-        hasNumber &&
-        hasAddressWord &&
-        value.length <=
-          300
-      ) {
-        addresses.push(
-          value
-        );
-      }
+    if (
+      value.length < 8 ||
+      value.length > 300 ||
+      excluded.has(lower)
+    ) {
+      return;
     }
-  );
+
+    /*
+      Reject company/legal/registration text.
+    */
+    if (
+      /\b(?:cnpj|cpf|copyright|direitos reservados|registro|registrado|autorizad[ao]|minist[eé]rio|fazenda|ltda|limitada|marca administrada|todos os direitos|202\d)\b/i.test(
+        value
+      )
+    ) {
+      return;
+    }
+
+    /*
+      Reject legal/company lines containing a tax ID.
+      Current Brazilian CNPJ format is 00.000.000/0000-00.
+      This prevents CNPJ numbers from becoming addresses.
+    */
+    if (
+      /\b\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}\b/.test(
+        value
+      )
+    ) {
+      return;
+    }
+
+    /*
+      Reject year ranges such as 2002-2026.
+    */
+    if (
+      /\b(?:19|20)\d{2}\s*[-/]\s*(?:19|20)\d{2}\b/.test(
+        value
+      )
+    ) {
+      return;
+    }
+
+    /*
+      A real address normally has a house number followed by
+      a street name, or a strong street keyword.
+    */
+    const hasHouseNumber =
+      /^\s*\d+[A-Za-z]?(?:[-/]\d+[A-Za-z]?)?\s+\D/.test(
+        value
+      );
+
+    const hasStreetWord =
+      /\b(?:street|st\.?|road|rd\.?|avenue|ave\.?|lane|ln\.?|boulevard|blvd\.?|drive|dr\.?|way|place|pl\.?|court|ct\.?|parkway|pkwy\.?|highway|hwy\.?|rua|r\.?|avenida|av\.?|travessa|alameda|estrada|praça|praca|weg|straat|laan|gracht|kade)\b/i.test(
+        value
+      );
+
+    const hasAddressUnit =
+      /\b(?:building|bldg\.?|floor|fl\.?|suite|unit|apartment|apt\.?|block|sector|nagar|colony)\b/i.test(
+        value
+      );
+
+    const hasPostalCode =
+      /\b(?:\d{5}(?:-\d{4})?|\d{4}\s?[A-Z]{2}|\d{5}-\d{3})\b/i.test(
+        value
+      );
+
+    const hasCommaStructure =
+      value.split(",").length >= 2;
+
+    /*
+      Accept only when there is meaningful address structure.
+    */
+    if (
+      (
+        hasHouseNumber &&
+        (
+          hasStreetWord ||
+          hasCommaStructure
+        )
+      ) ||
+      (
+        hasStreetWord &&
+        hasPostalCode
+      ) ||
+      (
+        hasAddressUnit &&
+        hasStreetWord
+      )
+    ) {
+      addresses.push(value);
+    }
+  });
 
   return uniqueValues(
     addresses
   );
 }
+
+
 
 function extractPhoneFromUpiId(
   upiId
@@ -3311,6 +5266,16 @@ function renderDetails(
 */
 
 function resetSnapshotVisibility() {
+
+  const selectedTextBlock =
+    document.getElementById(
+      "selectedTextBlock"
+   );
+
+  selectedTextBlock.classList.add(
+    "hidden"
+  );
+  
   qrOnlyImage.classList.remove(
     "hidden"
   );
@@ -3338,7 +5303,15 @@ function resetSnapshotVisibility() {
   detectedPhones.classList.add(
     "hidden"
   );
-
+  
+  detectedPossiblePhones.classList.add(
+    "hidden"
+  );
+  
+  detectedDomains.classList.add(
+    "hidden"
+  );
+  
   detectedUrls.classList.add(
     "hidden"
   );
@@ -3352,12 +5325,24 @@ function resetSnapshotVisibility() {
 
   phoneList.innerHTML =
     "";
-
+  
+  possiblePhoneList.innerHTML =
+    "";
+  
+  domainList.innerHTML =
+    "";
+  
   urlList.innerHTML =
     "";
 
   addressList.innerHTML =
     "";
+    
+  selectedText.value =
+    "";
+
+  copySelectedTextButton.disabled =
+    true;
 }
 
 function resetAllSections() {
@@ -3397,6 +5382,52 @@ function resetAllSections() {
 
   copyStatus.textContent =
     "";
+    
+  pageAnalysisSection.classList.add(
+    "hidden"
+  );
+
+  pageAnalysisStatus.textContent =
+    "";
+
+  pageAnalysisResults.classList.add(
+    "hidden"
+  );
+
+  pageAnalysisEmpty.classList.add(
+    "hidden"
+  );
+
+  pageAnalysisPhoneList.innerHTML =
+    "";
+  
+  pageAnalysisPossiblePhoneList.innerHTML =
+    "";
+  
+  
+  pageAnalysisPossiblePhones.classList.add(
+    "hidden"
+  );
+  
+  pageAnalysisDomains.classList.add(
+    "hidden"
+  );
+
+  pageAnalysisDomainList.innerHTML =
+    "";
+  
+  pageAnalysisUrls.classList.add(
+    "hidden"
+  );
+
+  pageAnalysisUrlList.innerHTML =
+    "";
+  
+  pageAnalysisEmailList.innerHTML =
+    "";
+
+  pageAnalysisAddressList.innerHTML =
+    "";  
 
   resetUpiPhoneDisplay();
   resetWebsiteDisplay();
@@ -3505,3 +5536,261 @@ function showEmpty(
     "hidden"
   );
 }
+
+
+/*
+  ============================================================
+  analyze webpage 
+  ============================================================
+*/
+async function analyzeWebpage() {
+  analyzePageButton.disabled =
+    true;
+
+  analyzePageButton.textContent =
+    "Analyzing...";
+
+  /*
+    Show Webpage Analysis in the same result-card layout
+    used by Snapshot.
+  */
+  emptyState.classList.add(
+    "hidden"
+  );
+
+  resultCard.classList.remove(
+    "hidden"
+  );
+
+  resultHeading.textContent =
+    "Webpage Analysis";
+
+  /*
+    Hide all sections that belong to QR and Snapshot results.
+  */
+  paymentInfo.classList.add(
+    "hidden"
+  );
+
+  addressSection.classList.add(
+    "hidden"
+  );
+
+  pixSection.classList.add(
+    "hidden"
+  );
+
+  qrisSection.classList.add(
+    "hidden"
+  );
+
+  imageSection.classList.add(
+    "hidden"
+  );
+
+  rawPayloadSection.classList.add(
+    "hidden"
+  );
+
+  details.innerHTML =
+    "";
+
+  copyStatus.textContent =
+    "";
+
+  resetUpiPhoneDisplay();
+  resetWebsiteDisplay();
+  resetEmailDisplay();
+  resetContactDisplay();
+  resetEventDisplay();
+
+  renderPhoneDetails(
+    null
+  );
+
+  renderSmsDetails(
+    null
+  );
+
+  /*
+    Show only webpage-analysis output.
+  */
+  pageAnalysisSection.classList.remove(
+    "hidden"
+  );
+
+  pageAnalysisStatus.textContent =
+    "Reading webpage text...";
+
+  pageAnalysisResults.classList.add(
+    "hidden"
+  );
+
+  pageAnalysisEmpty.classList.add(
+    "hidden"
+  );
+
+  pageAnalysisPhoneList.innerHTML =
+    "";
+  
+  pageAnalysisPossiblePhoneList.innerHTML =
+    "";
+
+  pageAnalysisPossiblePhones.classList.add(
+    "hidden"
+  );
+  
+  pageAnalysisDomains.classList.add(
+    "hidden"
+  );
+
+  pageAnalysisDomainList.innerHTML =
+    "";
+  
+  pageAnalysisUrls.classList.add(
+    "hidden"
+  );
+
+  pageAnalysisUrlList.innerHTML =
+    ""; 
+     
+  pageAnalysisEmailList.innerHTML =
+    "";
+
+  pageAnalysisAddressList.innerHTML =
+    "";
+
+  try {
+    const tabs =
+      await browser.tabs.query({
+        active: true,
+        currentWindow: true
+      });
+
+    const tab =
+      tabs[0];
+
+    if (
+      !tab ||
+      !tab.id
+    ) {
+      throw new Error(
+        "No active webpage was found."
+      );
+    }
+
+    const response =
+      await browser.tabs.sendMessage(
+        tab.id,
+        {
+          type:
+            "ANALYZE_WEBPAGE"
+        }
+      );
+
+    if (
+      !response ||
+      !response.ok
+    ) {
+      throw new Error(
+        "The webpage did not return readable text."
+      );
+    }
+    
+    console.log(
+      "[popup] Webpage analysis response:",
+      response
+    );
+    
+    renderPageAnalysis(
+      response.text ||
+      "",
+      response.links ||
+      []
+    );
+  } catch (error) {
+    pageAnalysisStatus.textContent =
+      error.message ||
+      "Analysis failed.";
+
+    pageAnalysisResults.classList.add(
+      "hidden"
+    );
+
+    pageAnalysisEmpty.classList.add(
+      "hidden"
+    );
+  } finally {
+    analyzePageButton.disabled =
+      false;
+
+    analyzePageButton.textContent =
+      "Analyze webpage";
+  }
+}
+
+function renderKeyboardPageAnalysis(
+  result
+) {
+  emptyState.classList.add(
+    "hidden"
+  );
+
+  resultCard.classList.remove(
+    "hidden"
+  );
+
+  resultHeading.textContent =
+    "Webpage Analysis";
+
+  paymentInfo.classList.add(
+    "hidden"
+  );
+
+  addressSection.classList.add(
+    "hidden"
+  );
+
+  pixSection.classList.add(
+    "hidden"
+  );
+
+  qrisSection.classList.add(
+    "hidden"
+  );
+
+  imageSection.classList.add(
+    "hidden"
+  );
+
+  rawPayloadSection.classList.add(
+    "hidden"
+  );
+
+  details.innerHTML =
+    "";
+
+  copyStatus.textContent =
+    "";
+
+  resetUpiPhoneDisplay();
+  resetWebsiteDisplay();
+  resetEmailDisplay();
+  resetContactDisplay();
+  resetEventDisplay();
+  resetSnapshotVisibility();
+
+  renderPhoneDetails(
+    null
+  );
+
+  renderSmsDetails(
+    null
+  );
+
+  renderPageAnalysis(
+    result.text ||
+    ""
+  );
+}
+
